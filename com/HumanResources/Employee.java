@@ -2,21 +2,29 @@ package com.HumanResources;
 /**
  * Employee class_Define employee obj
  */
-public class Employee extends Staff implements ICalculator{
+public class Employee extends Staff{
 
-    int overTime;
+    private int overTime;
+    //Getter
+    public int GetOver() {
+        return overTime;
+    }
+    //Setter
+    public void SetOver(int input) {
+        overTime = input;
+    }
 
     @Override
     public void displayInformation() {
         // TODO Auto-generated method stub
-        System.out.printf("| %2s", id);
-        System.out.printf("| %10s", name);
-        System.out.printf("| %10s", age);
-        System.out.printf("| %25s", wage);
-        System.out.printf("| %30s", startedDay);
-        System.out.printf("| %10s", department.departmentName);
-        System.out.printf("| %10s", offDays);
-        System.out.printf("| %10s", overTime);
+        System.out.printf("| %2s", GetID());
+        System.out.printf("| %10s", GetName());
+        System.out.printf("| %10s", GetAge());
+        System.out.printf("| %25s", GetWage());
+        System.out.printf("| %30s", GetDate());
+        System.out.printf("| %10s", GetDepartment().departmentName);
+        System.out.printf("| %10s", GetDays());
+        System.out.printf("| %10s", GetOver());
         System.out.printf("| %10s", "\n");
     }
 
@@ -25,7 +33,7 @@ public class Employee extends Staff implements ICalculator{
         // TODO Auto-generated method stub
         int salary;
 
-        salary = wage * 3000000 + overTime * 200000;
+        salary = GetWage() * 3000000 + overTime * 200000;
 
         return salary;
     }

@@ -9,8 +9,7 @@ public class HumanResources {
 
     //Arraylist for storing objs
     static List<Department> departments = new ArrayList<>();
-    static List<Employee> employees = new ArrayList<>();
-    static List<Manager> managers = new ArrayList<>();
+    static List<Staff> staffs = new ArrayList<>();
 
     //Read Data from CSV file
     public static void CSVreader() throws ParseException{
@@ -26,21 +25,21 @@ public class HumanResources {
                 if (data[7].isEmpty()) {
                     Employee employee = new Employee();
                     
-                    employee.id = Integer.parseInt(data[0]);
-                    employee.name = data[1];
-                    employee.age = Integer.parseInt(data[2]);
-                    employee.wage = Integer.parseInt(data[3]);
+                    employee.SetID(Integer.parseInt(data[0]));
+                    employee.SetName(data[1]);
+                    employee.SetAge(Integer.parseInt(data[2]));
+                    employee.SetWage(Integer.parseInt(data[3]));
         
                     String dateInString = data[4];
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd");
                     Date date = sdf.parse(dateInString);
-                    employee.startedDay = date;
+                    employee.SetDate(date);
         
                     Boolean checker = false;
                     for (Department d : departments) {
                         if (d.departmentName.equals(data[5])) {
                             checker = true;
-                            employee.department = d;
+                            employee.SetDepartment(d);
                         }
                     }
                     if (checker == false) {
@@ -49,31 +48,31 @@ public class HumanResources {
                         department.departmentName = data[5];
         
                         departments.add(department);
-                        employee.department = department;
+                        employee.SetDepartment(department);
                     }
         
-                    employee.offDays = Integer.parseInt(data[6]);
+                    employee.SetDays(Integer.parseInt(data[6]));
 
-                    employee.overTime = Integer.parseInt(data[8]);
+                    employee.SetOver(Integer.parseInt(data[8]));
         
-                    employees.add(employee);
+                    staffs.add(employee);
                 }else{
                     Manager manager = new Manager();
-                    manager.id = Integer.parseInt(data[0]);        
-                    manager.name = data[1];
-                    manager.age = Integer.parseInt(data[2]);
-                    manager.wage = Integer.parseInt(data[3]);
+                    manager.SetID(Integer.parseInt(data[0]));        
+                    manager.SetName(data[1]);
+                    manager.SetAge(Integer.parseInt(data[2]));
+                    manager.SetWage(Integer.parseInt(data[3]));
         
                     String dateInString = data[4];
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd");
                     Date date = sdf.parse(dateInString);
-                    manager.startedDay = date;
+                    manager.SetDate(date);
         
                     Boolean checker = false;
                     for (Department d : departments) {
                         if (d.departmentName.equals(data[5])) {
                             checker = true;
-                            manager.department = d;
+                            manager.SetDepartment(d);
                         }
                     }
                     if (checker == false) {
@@ -82,14 +81,14 @@ public class HumanResources {
                         department.departmentName = data[5];
         
                         departments.add(department);
-                        manager.department = department;
+                        manager.SetDepartment(department);
                     }
         
-                    manager.offDays = Integer.parseInt(data[6]);
+                    manager.SetDays(Integer.parseInt(data[6]));
                     
-                    manager.role = data[7];
+                    manager.SetRole(data[7]);
         
-                    managers.add(manager);
+                    staffs.add(manager);
                 }
             }
             csvReader.close();
@@ -103,52 +102,36 @@ public class HumanResources {
     //Save Data to CSV file
     public static void CSVwriter() throws IOException {
         FileWriter csvWriter = new FileWriter("CSV/employees.csv");
-        for (Manager ma : managers) {
-            csvWriter.append(Integer.toString(ma.id));
+        for (Staff staff : staffs) {
+            csvWriter.append(Integer.toString(staff.GetID()));
             csvWriter.append(",");
-            csvWriter.append(ma.name);
+            csvWriter.append(staff.GetName());
             csvWriter.append(",");
-            csvWriter.append(Integer.toString(ma.age));
+            csvWriter.append(Integer.toString(staff.GetAge()));
             csvWriter.append(",");
-            csvWriter.append(Integer.toString(ma.wage));
-            csvWriter.append(",");
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd");
-            String date = sdf.format(ma.startedDay);  
-            csvWriter.append(date);
-            csvWriter.append(",");
-            csvWriter.append(ma.department.departmentName);
-            csvWriter.append(",");
-            csvWriter.append(Integer.toString(ma.offDays));
-            csvWriter.append(",");
-            csvWriter.append(ma.role);
-            csvWriter.append(",");
-            csvWriter.append("0");
-            csvWriter.append("\n");
-        }
-
-        for (Employee em : employees) {
-            csvWriter.append(Integer.toString(em.id));
-            csvWriter.append(",");
-            csvWriter.append(em.name);
-            csvWriter.append(",");
-            csvWriter.append(Integer.toString(em.age));
-            csvWriter.append(",");
-            csvWriter.append(Integer.toString(em.wage));
+            csvWriter.append(Integer.toString(staff.GetWage()));
             csvWriter.append(",");
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd");
-            String date = sdf.format(em.startedDay);  
+            String date = sdf.format(staff.GetDate());  
             csvWriter.append(date);
             csvWriter.append(",");
-            csvWriter.append(em.department.departmentName);
+            csvWriter.append(staff.GetDepartment().departmentName);
             csvWriter.append(",");
-            csvWriter.append(Integer.toString(em.offDays));
+            csvWriter.append(Integer.toString(staff.GetDays()));
             csvWriter.append(",");
-            csvWriter.append("");
+            if (staff.getClass() == Manager.class) {
+                csvWriter.append(((Manager) staff).GetRole());
+            } else {
+                csvWriter.append("");
+            }
             csvWriter.append(",");
-            csvWriter.append(Integer.toString(em.overTime));
+            if (staff.getClass() == Employee.class) {
+                csvWriter.append(Integer.toString(((Employee) staff).GetOver()));
+            } else {
+                csvWriter.append("0");
+            }
             csvWriter.append("\n");
         }
-
         csvWriter.flush();
         csvWriter.close();
     }
@@ -164,13 +147,8 @@ public class HumanResources {
         System.out.printf("| %10s", "Leave days");
         System.out.printf("| %10s", "Overtime");
         System.out.printf("| %10s", "Role\n");
-        System.out.println("Managers");
-        for (Manager ma : managers) {
-            ma.displayInformation();
-        }
-        System.out.println("Employees");
-        for (Employee em : employees) {
-            em.displayInformation();
+        for (Staff staff : staffs) {
+            staff.displayInformation();
         }
     }
 
@@ -179,23 +157,15 @@ public class HumanResources {
         System.out.printf("| %2s","ID");
         System.out.printf("| %10s", "Name");
         System.out.printf("| %10s", "Members\n");
-        
         for (Department de : departments) {
             de.memberNum = 0;
-
-            for (Manager ma : managers) {
-                if (ma.department == de) {
+            for (Staff staff : staffs) {
+                if (staff.GetDepartment() == de) {
                     de.memberNum++;
                 }
             }
-
-            for (Employee em : employees) {
-                if (em.department == de) {
-                    de.memberNum++;
-                }
-            }
-
             de.displayDepartments();
+
         }
     }
 
@@ -212,14 +182,9 @@ public class HumanResources {
         System.out.printf("| %10s", "Role\n");
         for (Department de : departments) {
             System.out.println(de.departmentId+" "+de.departmentName);
-            for (Manager ma : managers) {
-                if (ma. department == de) {
-                    ma.displayInformation();
-                }
-            }
-            for (Employee em : employees) {
-                if (em. department == de) {
-                    em.displayInformation();
+            for (Staff staff : staffs) {
+                if (staff.GetDepartment() == de) {
+                    staff.displayInformation();
                 }
             }
         }
@@ -233,23 +198,23 @@ public class HumanResources {
         if (isManager == true) {
             Manager manager = new Manager();
 
-            manager.id = managers.size() + employees.size() + 1;
-            System.out.println("ID: " + manager.id);
+            manager.SetID(staffs.size()+1);
+            System.out.println("ID: " + manager.GetID());
 
             System.out.print("Name: ");
-            manager.name = sc.next();
+            manager.SetName(sc.next());
 
             System.out.print("Age: ");
-            manager.age = sc.nextInt();
+            manager.SetAge(sc.nextInt());
 
             System.out.print("Coefficients salary: ");
-            manager.wage = sc.nextInt();
+            manager.SetWage(sc.nextInt());
 
             System.out.println("Start date(yyyy-M-dd): ");
             String dateInString = sc.next();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd");
             Date date = sdf.parse(dateInString);
-            manager.startedDay = date;
+            manager.SetDate(date);
 
             System.out.println("Department: ");
             String de = sc.next();
@@ -257,7 +222,7 @@ public class HumanResources {
             for (Department d : departments) {
                 if (d.departmentName.equals(de)) {
                     checker = true;
-                    manager.department = d;
+                    manager.SetDepartment(d);
                 }
             }
             if (checker == false) {
@@ -266,36 +231,36 @@ public class HumanResources {
                 department.departmentName = de;
 
                 departments.add(department);
-                manager.department = department;
+                manager.SetDepartment(department);
             }
 
             System.out.println("Paid leave days: ");
-            manager.offDays = sc.nextInt();
+            manager.SetDays(sc.nextInt());
             
-            System.out.println("Role(Business Leader, Project Leader, Technical Leader): ");
-            manager.role = sc.next();
+            System.out.println("Role(Business_Leader, Project_Leader, Technical_Leader): ");
+            manager.SetRole(sc.next());
 
-            managers.add(manager);
+            staffs.add(manager);
         }else{
             Employee employee = new Employee();
             
-            employee.id = managers.size() + employees.size() + 1;
-            System.out.println("ID: " + employee.id);
+            employee.SetID(staffs.size()+1);
+            System.out.println("ID: " + employee.GetID());
 
             System.out.print("Name: ");
-            employee.name = sc.next();
+            employee.SetName(sc.next());
 
             System.out.print("Age: ");
-            employee.age = sc.nextInt();
+            employee.SetAge(sc.nextInt());
 
             System.out.print("Coefficients salary: ");
-            employee.wage = sc.nextInt();
+            employee.SetWage(sc.nextInt());
 
             System.out.println("Start date(yyyy-M-dd): ");
             String dateInString = sc.next();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-dd");
             Date date = sdf.parse(dateInString);
-            employee.startedDay = date;
+            employee.SetDate(date);
 
             System.out.println("Department: ");
             String de = sc.next();
@@ -303,7 +268,7 @@ public class HumanResources {
             for (Department d : departments) {
                 if (d.departmentName.equals(de)) {
                     checker = true;
-                    employee.department = d;
+                    employee.SetDepartment(d);
                 }
             }
             if (checker == false) {
@@ -312,17 +277,18 @@ public class HumanResources {
                 department.departmentName = de;
 
                 departments.add(department);
-                employee.department = department;
+                employee.SetDepartment(department);
             }
 
             System.out.println("Paid leave days: ");
-            employee.offDays = sc.nextInt();
+            employee.SetDays(sc.nextInt());
 
             System.out.println("Overtime: ");
-            employee.overTime = sc.nextInt();
+            employee.SetOver(sc.nextInt());
 
-            employees.add(employee);
+            staffs.add(employee);
         }
+
     }
 
     //Search and display staff info by name or id
@@ -342,29 +308,21 @@ public class HumanResources {
 
         try{
             int id = Integer.parseInt(input);
-            for (Manager m : managers) {
-                if (m.id == id) {
-                    m.displayInformation();
-                }
-            }
-            for (Employee e : employees) {
-                if (e.id == id) {
-                    e.displayInformation();
+            for (Staff s : staffs) {
+                if (s.GetID() == id) {
+                    s.displayInformation();
                 }
             }
         }
         catch (NumberFormatException ex){
-            for (Manager m : managers) {
-                if (m.name.equals(input)) {
-                    m.displayInformation();
-                }
-            }
-            for (Employee e : employees) {
-                if (e.name.equals(input)) {
-                    e.displayInformation();
+            for (Staff s : staffs) {
+                if (s.GetName().equals(input)) {
+                    s.displayInformation();
                 }
             }
         }
+
+
     }
 
     //Calculate and display staff salary
@@ -374,40 +332,28 @@ public class HumanResources {
         System.out.printf("| %10s", "Name");
         System.out.printf("| %15s", "Salary\n");
 
-        System.out.println("Managers");
-        for (Manager ma : managers) {
-            System.out.printf("| %2s",ma.id);
-            System.out.printf("| %10s", ma.name);
-            System.out.printf("| %15s", ma.calculateSalary()+"\n");
+        for (Staff s : staffs) {
+            System.out.printf("| %2s",s.GetID());
+            System.out.printf("| %10s", s.GetName());
+            System.out.printf("| %15s", s.calculateSalary()+"\n");
         }
-        System.out.println("Employees");
-        for (Employee em : employees) {
-            System.out.printf("| %2s",em.id);
-            System.out.printf("| %10s", em.name);
-            System.out.printf("| %15s", em.calculateSalary()+"\n");
-        }
+
     }
 
     //Sort salary of staffs descending and ascending
     public static void sortPayroll() {
-        Comparator<Manager> managersComparator
-         = (c1, c2) -> (int) (c2.calculateSalary() - c1.calculateSalary());
-         Comparator<Employee> employeesComparator
+        Comparator<Staff> Comparator
          = (c1, c2) -> (int) (c2.calculateSalary() - c1.calculateSalary());
 
-        managers.sort(managersComparator);
-        employees.sort(employeesComparator);
+        staffs.sort(Comparator);
 
         displayAllStaffsPayroll();
     }
     public static void sortPayrollReverse() {
-        Comparator<Manager> managersComparator
-         = (c1, c2) -> (int) (c1.calculateSalary() - c2.calculateSalary());
-         Comparator<Employee> employeesComparator
+        Comparator<Staff> Comparator
          = (c1, c2) -> (int) (c1.calculateSalary() - c2.calculateSalary());
 
-        managers.sort(managersComparator);
-        employees.sort(employeesComparator);
+        staffs.sort(Comparator);
 
         displayAllStaffsPayroll();
     }
@@ -419,49 +365,51 @@ public class HumanResources {
         Scanner sc = new Scanner(System.in);
         System.out.println("\n1. Display the list of existing employees in the company\n2. Show parts of the company\n3. Display employees by department\n4. Add new employees to the company: including 2 types\n- Add regular staff \n- Add employees who are management levels (with additional positions)\n5. Search for employee information by employee's name or code\n6. Display the payroll of employees throughout the company\n7. Display employee payroll in ascending order\n8. Display employee payroll in descending order\n9. Close program and save file");
         do {
-            System.out.print("\nChoose what you want to do from above options!");
+            System.out.print("\nChoose what you want to do from above options: ");
             isRunning = true;
             int method = sc.nextInt();
-            if (method == 1) {
-                displayAllStaffs();
-                isRunning = false;
-            }
-            else if (method == 2) {
-                displayAllDepartments();
-                isRunning = false;
-            }
-            else if (method == 3) {
-                sortStaffsByDepartments();
-                isRunning = false;
-            }
-            else if (method == 4) {
-                newEmployee();
-                isRunning = false;
-            }
-            else if (method == 5) {
-                search();
-                isRunning = false;
-            }
-            else if (method == 6) {
-                displayAllStaffsPayroll();
-                isRunning = false;
-            }
-            else if (method == 7) {
-                sortPayroll();
-                isRunning = false;
-            }
-            else if (method == 8){
-                sortPayrollReverse();
-                isRunning = false;
-            }
-            else if (method == 9){
-                isRunning = true;
-            }
-            else{
-                System.out.println("\nYour choice is invalid!");
-                isRunning = false;
+            switch (method) {
+                default:
+                    System.out.println("\nYour choice is invalid!!\nPlease choose again.");
+                    isRunning = false;
+                    break;
+                case 1:
+                    displayAllStaffs();
+                    isRunning = false;
+                    break;
+                case 2:
+                    displayAllDepartments();
+                    isRunning = false;
+                    break;
+                case 3:
+                    sortStaffsByDepartments();
+                    isRunning = false;
+                    break;
+                case 4:
+                    newEmployee();
+                    isRunning = false;
+                    break;
+                case 5:
+                    search();
+                    isRunning = false;
+                    break;
+                case 6:
+                    displayAllStaffsPayroll();
+                    isRunning = false;
+                    break;
+                case 7:
+                    sortPayroll();
+                    isRunning = false;
+                    break;
+                case 8:
+                    sortPayrollReverse();
+                    isRunning = false;
+                    break;
+                case 9:
+                    isRunning = true;
             }
         } while (isRunning == false);
         CSVwriter();
+
     }
 }
